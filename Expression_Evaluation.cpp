@@ -38,7 +38,9 @@ public:
 
     void reset()
     {
-        while (!st.empty()) st.pop();
+        while (!st.empty()) 
+            st.pop();
+
         result = 0;
         num = 0;
         sign = 1;
