@@ -65,7 +65,7 @@ public:
 
     void BuildBitonic() {
 
-        for (int i = 0; i < inputsize; i++) {                          //4lna 2l bitonic point
+        for (int i = 0; i < inputsize; i++) { 
             if (inputarray[i] == bitonicpoint) {
                 swap(inputarray[i], inputarray[inputsize - 1]);
                 inputsize--;
@@ -77,11 +77,11 @@ public:
         int bubblesize = inputsize / 2;
         int selectionsize = inputsize - bubblesize;
         int* bubblearray = new int[bubblesize];
-        int* selectionarray = new int[selectionsize];           //declarations ya 7ag
+        int* selectionarray = new int[selectionsize];
 
 
 
-        for (int i = 0, j = 0; i < inputsize; i++) {                 // 2sm 2l elements 3ala 2l arrays w lw odd 2l selection bya5od 2ktr 34an rgoola
+        for (int i = 0, j = 0; i < inputsize; i++) {
             if (i < bubblesize) {
                 bubblearray[i] = inputarray[i];
             }
@@ -96,7 +96,7 @@ public:
 
         selectionSort(selectionarray, selectionsize);
 
-        inputsize++;                                            // gam3 2l array bubble -> bitonicpoint -> selection , w hat 2l index bta3 2l bitonic point
+        inputsize++;
 
         int i = 0;
         for (; i < bubblesize; i++) {
