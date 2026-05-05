@@ -1,92 +1,127 @@
 #include <iostream>
 #include <stack>
 #include <string>
+#include <cctype>
+#include <stdexcept>
 using namespace std;
 
-int evaluate(string s)
+class ExpressionEvaluator
 {
+private:
     stack<int> st;
-    int result = 0;
-    int num = 0;
-    int sign = 1; // +1 or -1
+    int result;
+    int num;
+    int sign; // +1 or -1
 
-    for (int i = 0; i < s.length(); i++)
+    // Helper to process operator
+    void applyOperator()
     {
-        char c = s[i];
+        result += sign * num;
+        num = 0;
+    }
 
-        if (isdigit(c))
-            num = num * 10 + (c - '0');
+    // Check unary operator
+    bool isUnary(const string& s, int i)
+    {
+        int j = i - 1;
+        while (j >= 0 && s[j] == ' ')
+            j--;
 
-        else if (c == '+' || c == '-')
+        return (j < 0 || s[j] == '(');
+    }
+
+public:
+    ExpressionEvaluator()
+    {
+        reset();
+    }
+
+    void reset()
+    {
+        while (!st.empty()) st.pop();
+        result = 0;
+        num = 0;
+        sign = 1;
+    }
+
+    int evaluate(const string& s)
+    {
+        reset();
+
+        for (int i = 0; i < s.length(); i++)
         {
-            // find previous non-space character
-            int j = i - 1;
-            while (j >= 0 && s[j] == ' ') 
-                j--;
+            char c = s[i];
 
-            if (c == '+')
+            if (c == ' ')
+                continue;
+
+            if (isdigit(c))
+                num = num * 10 + (c - '0');
+
+            else if (c == '+' || c == '-')
             {
-                // unary plus is invalid
-                if (j < 0 || s[j] == '(')
+                if (c == '+')
                 {
-                    cout << "Invalid expression: unary + is not allowed\n";
-                    exit(0);
+                    if (isUnary(s, i))
+                        throw invalid_argument("Unary + is not allowed");
+
+                    applyOperator();
+                    sign = 1;
                 }
 
-                result += sign * num;
-                num = 0;
+                else if (c == '-')
+                {
+                    if (isUnary(s, i))
+                    {
+                        sign = -1;
+                        continue;
+                    }
+
+                    applyOperator();
+                    sign = -1;
+                }
+            }
+
+            else if (c == '(')
+            {
+                st.push(result);
+                st.push(sign);
+                result = 0;
                 sign = 1;
             }
 
-            else // c == '-'
+            else if (c == ')')
             {
-                // unary minus is allowed
-                if (j < 0 || s[j] == '(')
-                {
-                    sign = -1;
-                    continue;
-                }
+                applyOperator();
 
-                result += sign * num;
-                num = 0;
-                sign = -1;
+                result *= st.top(); st.pop();
+                result += st.top(); st.pop();
             }
         }
 
-        else if (c == '(')
-        {
-            st.push(result);
-            st.push(sign);
-
-            result = 0;
-            sign = 1;
-        }
-
-        else if (c == ')')
-        {
-            result += sign * num;
-            num = 0;
-
-            result *= st.top(); // sign before '('
-            st.pop();
-
-            result += st.top(); // previous result
-            st.pop();
-        }
+        return result + sign * num;
     }
-
-    return result + sign * num;
-}
+};
 
 int main()
 {
+    ExpressionEvaluator evaluator;
     string s;
+
     while (true)
     {
         cout << "Enter expression: ";
         getline(cin, s);
 
-        cout << "Result = " << evaluate(s) << endl << endl;
+        try
+        {
+            int result = evaluator.evaluate(s);
+            cout << "Result = " << result << endl << endl;
+        }
+        catch (exception& e)
+        {
+            cout << e.what() << endl << endl;
+        }
     }
 
     return 0;
