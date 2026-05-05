@@ -1,57 +1,82 @@
 #include <iostream>
 #include <vector>
+
 using namespace std;
 
-int comparisons = 0;
+class RotatedArraySearcher {
+private:
+    vector<int> data;
+    int comparisons;
 
-// Best Case:  O(1)
-// Average Case: O(log n)
-// Worst Case: O(n)
+public:
+    RotatedArraySearcher(const vector<int>& inputArray)
+        : data(inputArray), comparisons(0) {}
 
-bool rotated_sorted(int arr[], int target, int n) {
-    int l = 0, r = n - 1;
-    while (l <= r) {
-        int mid = l + (r - l) / 2;
-        comparisons++;
-        if (arr[mid] == target) {
-            return true;
-        }
-        if (arr[l] == arr[mid] && arr[mid] == arr[r]) {
-            l++;
-            r--;
-        } else if (arr[l] <= arr[mid]) {
-            comparisons += 2;
-            if (arr[l] <= target && target < arr[mid]) {
-                r = mid - 1;
-            } else {
-                l = mid + 1;
+    bool search(int target) {
+        int left = 0;
+        int right = data.size() - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            comparisons++;
+
+            if (data[mid] == target) {
+                return true;
             }
-        } else {
-            comparisons += 2;
-            if (arr[mid] <= target && target < arr[r]) {
-                l = mid + 1;
-            } else {
-                r = mid - 1;
+            if (data[left] == data[mid] && data[mid] == data[right]) {
+                left++;
+                right--;
+            }
+            else if (data[left] <= data[mid]) {
+                comparisons += 2;
+                if (data[left] <= target && target < data[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            }
+            else {
+                comparisons += 2;
+                if (data[mid] <= target && target <= data[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
             }
         }
+        return false;
     }
-    return false;
-}
+
+    int getComparisonCount() const {
+        return comparisons;
+    }
+};
 
 int main() {
-    int n, target;
-    cout << "Please input the size of array: ";
-    cin >> n;
-    int arr[n];
-    cout << "Please input the elements of array: ";
-    for (int i = 0; i < n; i++) cin >> arr[i];
-    cout << "Please input the target value: ";
+    int size, target;
+
+    cout << "Enter array size: ";
+    cin >> size;
+
+    vector<int> arr(size);
+    cout << "Enter array elements: ";
+    for (int i = 0; i < size; i++) {
+        cin >> arr[i];
+    }
+
+    cout << "Enter target value: ";
     cin >> target;
 
-    if (rotated_sorted(arr, target, n)) {
-        cout << "Found" << endl;
+    RotatedArraySearcher searcher(arr);
+
+    if (searcher.search(target)) {
+        cout << "Found\n";
     } else {
-        cout << "Not found" << endl;
+        cout << "Not Found\n";
     }
-    cout << "Number of comparisons: " << comparisons << endl;
+
+    cout << "Number of comparisons: "
+         << searcher.getComparisonCount() << endl;
+
+    return 0;
 }
