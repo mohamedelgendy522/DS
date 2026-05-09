@@ -9,26 +9,31 @@ private:
     int comparisons;
 
 public:
-    RotatedArraySearcher(const vector<int>& inputArray)
-        : data(inputArray), comparisons(0) {}
+    RotatedBinarySearch(vector<int> arr) {
+        data = arr;
+        comparisons = 0;
+    }
 
     bool search(int target) {
+        comparisons = 0;
         int left = 0;
         int right = data.size() - 1;
 
         while (left <= right) {
             int mid = left + (right - left) / 2;
-            comparisons++;
 
+            comparisons++; 
             if (data[mid] == target) {
                 return true;
             }
+
+            comparisons++; 
             if (data[left] == data[mid] && data[mid] == data[right]) {
                 left++;
                 right--;
             }
             else if (data[left] <= data[mid]) {
-                comparisons += 2;
+                comparisons++;
                 if (data[left] <= target && target < data[mid]) {
                     right = mid - 1;
                 } else {
@@ -36,7 +41,7 @@ public:
                 }
             }
             else {
-                comparisons += 2;
+                comparisons++; 
                 if (data[mid] <= target && target <= data[right]) {
                     left = mid + 1;
                 } else {
